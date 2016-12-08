@@ -7,7 +7,7 @@ const resolveFunctions = {
   Query: {
     products (_, args) {
       //return Products.findAll({where: {id: args.id}});
-      return Products.findAll({limit: 30});
+      return Products.findAll({limit: 10});
     },
   },
   Products: {
