@@ -9,6 +9,9 @@ const resolveFunctions = {
       //return Products.findAll({where: {id: args.id}});
       return Products.findAll({limit: 10});
     },
+    comments (_, args) {
+      return Comments.findAll({where: {prodid: args.prodid}});
+    }
   },
   Products: {
     likes(obj) {

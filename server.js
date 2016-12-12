@@ -12,6 +12,7 @@ const graphQLServer = express().use('*', cors());
 graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress({
   schema,
   context: {},
+  graphiql: true,
   //formatError: (err) => { console.log(err.stack); return err },
 }));
 

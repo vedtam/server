@@ -51,7 +51,11 @@ const Comments = db.define('comments', {
       primaryKey: true
     },
     prodid: Sequelize.STRING,
-    fbid: Sequelize.STRING
+    name: Sequelize.STRING,
+    fbid: Sequelize.STRING,
+    comment: Sequelize.STRING,
+    imgpath: Sequelize.STRING,
+    timestamp: Sequelize.STRING
   },
   {
     timestamps: false

@@ -24,9 +24,19 @@ type Products {
   likes: String
   comments: String
 }
+type Comments {
+  id: Int!
+  prodid: Int
+  name: String
+  fbid: String
+  comment: String
+  imgpath: String
+  timestamp: String
+}
 # the schema allows the following query:
 type Query {
   products: [Products]
+  comments(prodid: ID): [Comments]
 }
 `;
 
