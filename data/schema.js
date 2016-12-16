@@ -33,22 +33,31 @@ type Comments {
   imgpath: String
   timestamp: String
 }
+type Likes {
+  id: Int!
+  prodid: String
+  fbid: String
+}
+# this schema allows the following mutation:
+type Mutation {
+  likePost (
+    prodid: Int!
+    fbid: String
+  ): Likes
+  removeLike (
+    prodid: Int!
+    fbid: String
+  ): Likes
+}
 # the schema allows the following query:
 type Query {
   products: [Products]
   comments(prodid: ID): [Comments]
+  likes(prodid: Int, fbid: String): [Likes]
+  mutation: Mutation
 }
 `;
 
-// # this schema allows the following mutation:
-// type Mutation {
-//   upvotePost (
-//     postId: Int!
-//   ): Post
-// }
-// type Subscription {
-//   postUpvoted: Post
-// }
 
 export default makeExecutableSchema({
   typeDefs: schema,

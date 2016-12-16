@@ -11,38 +11,35 @@ const resolveFunctions = {
     },
     comments (_, args) {
       return Comments.findAll({where: {prodid: args.prodid}});
+    },
+    likes (_, args) {
+      return Likes.findAll({where: {prodid: args.prodid, fbid: args.fbid}});
     }
   },
+  Mutation: {
+    likePost(_, {prodid, fbid}) {
+      Likes.create({ prodid: prodid, fbid: fbid}).then(function(newLike){
+          // like saved succesfuly
+      }).catch(function(error){
+          console.log("Error inserting like");
+      });
+      return {"id":postid, "fbid":fbid};
+    },
+    removeLike(_, args) {
+      console.log(args);
+      Likes.destroy({where: {prodid: args.prodid, fbid: args.fbid}});
+      return {"id":3};
+    },
+  },
   Products: {
-    likes(obj) {
-      // return Likes.findAndCountAll({
-      //     where: {prodid: obj.id},
-      //     attributes: ['prodid'],
-      //     group: 'prodid',
-      //   }).get('count');
-
-      return Likes.count({where: {prodid: obj.id}});
+    likes(product) {
+    //return Likes.findAndCountAll({where: {prodid: product.id}});
+    return Likes.count({where: {prodid: product.id}});
     },
     comments(obj) {
       return Comments.count({where: {prodid: obj.id}});
     }
   },
-  // Mutation: {
-  //   upvotePost(_, { postId }) {
-  //     const post = find(posts, { id: postId });
-  //     if (!post) {
-  //       throw new Error(`Couldn't find post with id ${postId}`);
-  //     }
-  //     post.votes += 1;
-  //     pubsub.publish('postUpvoted', post);
-  //     return post;
-  //   },
-  // },
-  // Subscription: {
-  //   postUpvoted(post) {
-  //     return post;
-  //   },
-  // },
 };
 
 export default resolveFunctions;
