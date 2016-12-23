@@ -24,6 +24,7 @@ type Products {
   likes: String
   comments: String
 }
+
 type Comments {
   id: Int!
   prodid: Int
@@ -33,11 +34,25 @@ type Comments {
   imgpath: String
   timestamp: String
 }
+
 type Likes {
   id: Int!
   prodid: String
   fbid: String
 }
+
+type User {
+  id: Int!
+  name: String
+  email: String
+  password: String
+  phone: String
+  fbid: String
+  favorites: String
+  regid: String
+  validation: String  
+}
+
 # this schema allows the following mutation:
 type Mutation {
   likePost (
@@ -48,12 +63,28 @@ type Mutation {
     prodid: Int!
     fbid: String
   ): Likes
+  registerUser (
+    name: String
+    email: String
+    password: String
+    phone: String
+    fbid: String
+    favorites: String
+    regid: String
+  ): User
 }
+
+type Login {
+  user: User
+  validation: String
+}
+
 # the schema allows the following query:
 type Query {
   products: [Products]
   comments(prodid: ID): [Comments]
   likes(prodid: Int, fbid: String): [Likes]
+  login(email: String, password: String): Login
   mutation: Mutation
 }
 `;

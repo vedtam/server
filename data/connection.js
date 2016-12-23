@@ -62,10 +62,49 @@ const Comments = db.define('comments', {
   }
 );
 
+
+const User = db.define('users', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true
+    },
+    name: Sequelize.STRING,
+    email: Sequelize.STRING,
+    password: Sequelize.STRING,
+    phone: Sequelize.STRING,
+    fbid: {
+      type: Sequelize.STRING,
+      unique: true,
+      validate: {
+        isUnique: function (value, next) {
+          // TODO: need to validate for email as well in the future!!
+          User.find({where: {fbid: value}})
+            .then(function (user) {
+              // does a user exist with this fbid? If it does, is it empty? - than this is an email registration so we don't validate for duplicates
+              if (user && user.fbid != '') {
+                  return next('fbid already in use!');
+              }
+              return next();
+
+            }).catch(function (err) {
+              return next(err);
+            });
+        }
+      }
+    },
+    favorites: Sequelize.STRING,
+    regid: Sequelize.STRING,
+    timestamp: Sequelize.STRING
+  },
+  {
+    timestamps: false
+  }
+);
+
 // Products.hasMany(Likes);
 // Likes.belongsTo(Products);
 
-export { Products, Likes, Comments };
+export { Products, Likes, Comments, User};
 
 
 // Products.findAll().then(function(list) {
