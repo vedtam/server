@@ -33,6 +33,7 @@ type Comments {
   comment: String
   imgpath: String
   timestamp: String
+  validation: String
 }
 
 type Likes {
@@ -50,19 +51,11 @@ type User {
   fbid: String
   favorites: String
   regid: String
-  validation: String  
+  validation: String
 }
 
 # this schema allows the following mutation:
 type Mutation {
-  likePost (
-    prodid: Int!
-    fbid: String
-  ): Likes
-  removeLike (
-    prodid: Int!
-    fbid: String
-  ): Likes
   registerUser (
     name: String
     email: String
@@ -72,6 +65,25 @@ type Mutation {
     favorites: String
     regid: String
   ): User
+
+  likePost (
+    prodid: Int!
+    fbid: String
+  ): Likes
+
+  removeLike (
+    prodid: Int!
+    fbid: String
+  ): Likes
+
+  addComment (
+    name: String
+    fbid: String
+    comment: String
+    imgpath: String
+    prodid: Int!
+  ): Comments
+
 }
 
 type Login {

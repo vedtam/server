@@ -41,11 +41,13 @@ const resolveFunctions = {
       });
       return {"id":postid, "fbid":fbid};
     },
+
     removeLike(_, args) {
       console.log(args);
       Likes.destroy({where: {prodid: args.prodid, fbid: args.fbid}});
       return {"id":3};
     },
+
     registerUser(_, {name, email, password, phone, fbid, favorites, regid}) {
       return User.create({ name: name, email: email, password: password, phone: phone, fbid: fbid, favorites: favorites, regid: regid }).then(function(newUser){
           // TODO: case for "fbid already exists!"
@@ -55,6 +57,17 @@ const resolveFunctions = {
           return {error: error.message};
       });
     },
+
+    addComment(_, args){
+      return Comments.create({ name: args.name, fbid: args.fbid, comment: args.comment, imgpath: args.imgpath, prodid: args.prodid }).then(function(newComment){
+          // TODO: case for "fbid already exists!"
+          return {"validation":"1"};
+      }).catch(function(error){
+        console.log("error while adding comment! " + error);
+          return {error: error.message};
+      });
+    }
+
   },
 
   Products: {
