@@ -44,6 +44,8 @@ graphQLServer.post('/ups', upload.single('img'), function (req, res, next) {
 /* End File Upload */
 
 
+graphQLServer.use('/uploads', express.static('uploads'))
+
 // graphQLServer.use('/graphiql', graphiqlExpress({
 //   endpointURL: '/graphql',
 // }));
