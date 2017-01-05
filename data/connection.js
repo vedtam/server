@@ -11,6 +11,7 @@ const Products = db.define('products', {
       primaryKey: true
     },
     name: Sequelize.STRING,
+    email: Sequelize.STRING,
     fbid: Sequelize.STRING,
     title: Sequelize.STRING,
     description: Sequelize.STRING,
@@ -101,10 +102,35 @@ const User = db.define('users', {
   }
 );
 
+const Categories = db.define('categories', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true
+    },
+    category: Sequelize.STRING,
+    parent: Sequelize.STRING
+  },
+  {
+    timestamps: false
+  }
+);
+
+const Brands = db.define('brands', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true
+    },
+    brand: Sequelize.STRING
+  },
+  {
+    timestamps: false
+  }
+);
+
 // Products.hasMany(Likes);
 // Likes.belongsTo(Products);
 
-export { Products, Likes, Comments, User};
+export { Products, Likes, Comments, User, Categories, Brands};
 
 
 // Products.findAll().then(function(list) {

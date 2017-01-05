@@ -1,4 +1,6 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 import bodyParser from 'body-parser';
 //import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import graphqlExpress from 'express-graphql';
@@ -22,12 +24,20 @@ graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress({
 
 /* FILE UPLOAD */
 
-// TODO: create folder named by user's email address or fbID ???
-
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/')
+    fs.mkdir(__dirname + '/uploads/' + file.fieldname, function(err) {
+      if (err) {
+        if (err.code == 'EEXIST'){
+          // folder already exists
+        } else {
+          console.log('Error while creating folder for user!' + err);
+        }
+      }
+    });
+    cb(null, 'uploads/' + file.fieldname + '/')
   },
+
   filename: function (req, file, cb) {
     cb(null, file.originalname)
   }
@@ -35,9 +45,9 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage });
 
-graphQLServer.post('/ups', upload.single('img'), function (req, res, next) {
-  // req.file is the `avatar` file
-  // req.body will hold the text fields, if there were any
+graphQLServer.post('/ups', upload.any(), function (req, res, next) {
+  // req.files is array of `photos` files
+  // req.body will contain the text fields, if there were any
   res.status(204).end()
 });
 

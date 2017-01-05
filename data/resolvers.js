@@ -1,9 +1,22 @@
 import { find, filter } from 'lodash';
 //import { pubsub } from './subscriptions';
-import { Products, Likes, Comments, User } from './connection.js';
+import { Products, Likes, Comments, User, Categories, Brands } from './connection.js';
 
 
 const resolveFunctions = {
+
+  /*
+  *   ~ Root fields & resolvers ~
+  *
+  *   These resolver functions accesses the database and then constructs and returns the object we have queried for
+  *
+  *   @obj - The previous object, which for a field on the root Query type is often not used.
+  *   @args - The arguments provided to the field in the GraphQL query.
+  *   @context - A value which is provided to every resolver and holds important contextual information like the currently logged in user, or access to a database.
+  *
+  */
+
+
   Query: {
     products (_, args) {
       //return Products.findAll({where: {id: args.id}});
@@ -29,7 +42,10 @@ const resolveFunctions = {
       }).catch(function(error){
           return {validation: "Error while searching for user to login: " + error.message};
       });
-    }
+    },
+    bc (_, args){
+      return {brands:Brands.findAll({order: [['brand', 'ASC']]}), categories:Categories.findAll({order: [['category', 'ASC']]})};
+    },
   },
 
   Mutation: {
@@ -66,9 +82,27 @@ const resolveFunctions = {
         console.log("error while adding comment! " + error);
           return {error: error.message};
       });
+    },
+    uploadProduct(_, args){
+      return Products.create({name: args.name, email: args.email, fbid: args.fbid, title: args.title, description: args.description, category: args.category, brand: args.brand, size: args.size, color: args.color, cond: args.condition, origprice: args.origprice, saleprice: args.saleprice, images: args.images}).then(function(newProduct){
+          return {"validation":"1"};
+      }).catch(function(error){
+          console.log("error while uploading product! " + error);
+          return {"validation": error.message};
+      });
     }
-
   },
+
+
+
+  /*
+  *   ~ Trivial Resolvers ~
+  *
+  *   If a resolver isn't provided for a field, that a
+  *   property of the same name should be read and returned
+  *
+  */
+
 
   Products: {
     likes(product) {
@@ -79,6 +113,15 @@ const resolveFunctions = {
       return Comments.count({where: {prodid: obj.id}});
     }
   },
+  // Bc: {
+  //   brands (obj){
+  //     return obj.brands;
+  //
+  //   },
+  //   categories (obj){
+  //     return obj.categories;
+  //   }
+  // }
 };
 
 export default resolveFunctions;

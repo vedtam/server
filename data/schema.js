@@ -3,9 +3,13 @@ import { makeExecutableSchema } from 'graphql-tools';
 import resolvers from './resolvers';
 
 const schema = `
+
+# TYPES
+
 type Products {
   id: Int!
   name: String
+  email: String
   fbid: String
   title: String
   description: String
@@ -23,6 +27,7 @@ type Products {
   recommended: String
   likes: String
   comments: String
+  validation: String
 }
 
 type Comments {
@@ -54,7 +59,25 @@ type User {
   validation: String
 }
 
-# this schema allows the following mutation:
+type Categories {
+  id: Int!
+  category: String
+  parent: String
+}
+
+type Brands {
+  id: Int!
+  brand: String
+}
+
+type Bc {
+  brands: [Brands]
+  categories: [Categories]
+}
+
+
+# MUTATIONS
+
 type Mutation {
   registerUser (
     name: String
@@ -84,6 +107,22 @@ type Mutation {
     prodid: Int!
   ): Comments
 
+  uploadProduct (
+    name: String
+    email: String
+    fbid: String
+    title: String
+    description: String
+    category: String
+    brand: String
+    size: String
+    color: String
+    condition: String
+    origprice: String
+    saleprice: String
+    images: String
+  ): Products
+
 }
 
 type Login {
@@ -92,12 +131,14 @@ type Login {
 }
 
 # the schema allows the following query:
+
 type Query {
   products: [Products]
   comments(prodid: ID): [Comments]
   likes(prodid: Int, fbid: String): [Likes]
   login(email: String, password: String): Login
   mutation: Mutation
+  bc: Bc
 }
 `;
 
