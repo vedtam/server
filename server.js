@@ -24,6 +24,8 @@ graphQLServer.use('/graphql', bodyParser.json(), graphqlExpress({
 
 /* FILE UPLOAD */
 
+// TODO: create error log!!
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     fs.mkdir(__dirname + '/uploads/' + file.fieldname, function(err) {

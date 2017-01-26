@@ -6,7 +6,7 @@ const schema = `
 
 # TYPES
 
-type Products {
+type Product {
   id: Int!
   name: String
   email: String
@@ -25,12 +25,13 @@ type Products {
   soldstatus: String
   views: String
   recommended: String
-  likes: String
+  likescount: String
+  isliked(userid: Int): Int
   comments: String
   validation: String
 }
 
-type Comments {
+type Comment {
   id: Int!
   prodid: Int
   name: String
@@ -44,7 +45,7 @@ type Comments {
 type Likes {
   id: Int!
   prodid: String
-  fbid: String
+  userid: String
 }
 
 type User {
@@ -89,14 +90,14 @@ type Mutation {
     regid: String
   ): User
 
-  likePost (
+  addLike (
     prodid: Int!
-    fbid: String
+    userid: String
   ): Likes
 
   removeLike (
     prodid: Int!
-    fbid: String
+    userid: String
   ): Likes
 
   addComment (
@@ -105,7 +106,7 @@ type Mutation {
     comment: String
     imgpath: String
     prodid: Int!
-  ): Comments
+  ): [Comment]
 
   uploadProduct (
     name: String
@@ -121,7 +122,7 @@ type Mutation {
     origprice: String
     saleprice: String
     images: String
-  ): Products
+  ): Product
 
 }
 
@@ -133,9 +134,11 @@ type Login {
 # the schema allows the following query:
 
 type Query {
-  products: [Products]
-  comments(prodid: ID): [Comments]
-  likes(prodid: Int, fbid: String): [Likes]
+  products: [Product]
+  getProduct(id: Int): Product
+  comments(prodid: Int): [Comment]
+  likescount(prodid: Int, fbid: String): [Likes]
+  likedproducts(userid: Int): [Product]
   login(email: String, password: String): Login
   mutation: Mutation
   bc: Bc

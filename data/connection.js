@@ -10,6 +10,7 @@ const Products = db.define('products', {
       type: Sequelize.INTEGER,
       primaryKey: true
     },
+    userid: Sequelize.INTEGER,
     name: Sequelize.STRING,
     email: Sequelize.STRING,
     fbid: Sequelize.STRING,
@@ -39,7 +40,7 @@ const Likes = db.define('likes', {
       primaryKey: true
     },
     prodid: Sequelize.STRING,
-    fbid: Sequelize.STRING
+    userid: Sequelize.INTEGER,
   },
   {
     timestamps: false
@@ -70,29 +71,28 @@ const User = db.define('users', {
       primaryKey: true
     },
     name: Sequelize.STRING,
+    // email: {
+    //   type: Sequelize.STRING,
+    //   unique: true,
+    //   validate: {
+    //     isUnique: function (value, next) {
+    //       User.find({where: {email: value}})
+    //         .then(function (user) {
+    //           if (user && user.email != '') {
+    //               return next('email already in use!');
+    //           }
+    //           return next();
+    //
+    //         }).catch(function (err) {
+    //           return next(err);
+    //         });
+    //     }
+    //   }
+    // },
     email: Sequelize.STRING,
+    fbid: Sequelize.STRING,
     password: Sequelize.STRING,
     phone: Sequelize.STRING,
-    fbid: {
-      type: Sequelize.STRING,
-      unique: true,
-      validate: {
-        isUnique: function (value, next) {
-          // TODO: need to validate for email as well in the future!!
-          User.find({where: {fbid: value}})
-            .then(function (user) {
-              // does a user exist with this fbid? If it does, is it empty? - than this is an email registration so we don't validate for duplicates
-              if (user && user.fbid != '') {
-                  return next('fbid already in use!');
-              }
-              return next();
-
-            }).catch(function (err) {
-              return next(err);
-            });
-        }
-      }
-    },
     favorites: Sequelize.STRING,
     regid: Sequelize.STRING,
     timestamp: Sequelize.STRING
@@ -127,12 +127,17 @@ const Brands = db.define('brands', {
   }
 );
 
-// Products.hasMany(Likes);
-// Likes.belongsTo(Products);
+
+/*
+*  Associations can be returned eaither by: include: [Products] or by get() (ex: 'like.getProduct())')
+*
+*
+*
+*
+*
+*/
+
+Likes.belongsTo(Products, {foreignKey: 'prodid'});
+
 
 export { Products, Likes, Comments, User, Categories, Brands};
-
-
-// Products.findAll().then(function(list) {
-//   console.log(list[0]);
-// });

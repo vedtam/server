@@ -19,14 +19,20 @@ const resolveFunctions = {
 
   Query: {
     products (_, args) {
-      //return Products.findAll({where: {id: args.id}});
-      return Products.findAll({limit: 10});
+      return Products.findAll({limit: 20, order:[['timestamp', 'DESC']]});
+    },
+    getProduct (_, args) {
+      return Products.findOne({where: {id: args.id}});
     },
     comments (_, args) {
       return Comments.findAll({where: {prodid: args.prodid}});
     },
-    likes (_, args) {
-      return Likes.findAll({where: {prodid: args.prodid, fbid: args.fbid}});
+    likescount (_, args) {
+      return Likes.findAll({where: {prodid: args.prodid, fbid: args.userid}});
+    },
+    likedproducts (_, args){
+      return Likes.findAll({where: {userid: args.userid}})
+      .then(likes => { return likes.map(like => like.getProduct()) });
     },
     login (_, args) {
       return User.findOne({where: {email: args.email}}).then(function(user){
@@ -48,36 +54,37 @@ const resolveFunctions = {
     },
   },
 
+
+  /*
+  *   ~ Mutations ~
+  *
+  */
+
   Mutation: {
-    likePost(_, {prodid, fbid}) {
-      Likes.create({ prodid: prodid, fbid: fbid}).then(function(newLike){
-          // like saved succesfuly
+    addLike(_, {prodid, userid}) {
+      Likes.create({ prodid: prodid, userid: userid}).then(function(newLike){
       }).catch(function(error){
           console.log("Error inserting like");
       });
-      return {"id":postid, "fbid":fbid};
+      return {"prodid":prodid, "userid":userid};
     },
 
-    removeLike(_, args) {
-      console.log(args);
-      Likes.destroy({where: {prodid: args.prodid, fbid: args.fbid}});
-      return {"id":3};
+    removeLike(_, {prodid, userid}) {
+      Likes.destroy({where: {prodid: prodid, userid: userid}});
+      return {"prodid":prodid, "userid":userid};
     },
 
     registerUser(_, {name, email, password, phone, fbid, favorites, regid}) {
-      return User.create({ name: name, email: email, password: password, phone: phone, fbid: fbid, favorites: favorites, regid: regid }).then(function(newUser){
-          // TODO: case for "fbid already exists!"
-          return {name:name, email:email, fbid: fbid, "validation":"1"};
-      }).catch(function(error){
-        console.log("error while mutating! " + error);
-          return {error: error.message};
-      });
-    },
+        return User.findOrCreate({where: {email: email}, defaults: {name: name, email: email, password: password, phone: phone, fbid: fbid, favorites: favorites, regid: regid}
+          }).spread(function(user, created) {
+              //console.log(created);
+              return user.get({plain: true});
+          });
+      },
 
     addComment(_, args){
       return Comments.create({ name: args.name, fbid: args.fbid, comment: args.comment, imgpath: args.imgpath, prodid: args.prodid }).then(function(newComment){
-          // TODO: case for "fbid already exists!"
-          return {"validation":"1"};
+          return Comments.findAll({where: {prodid: args.prodid}});
       }).catch(function(error){
         console.log("error while adding comment! " + error);
           return {error: error.message};
@@ -104,24 +111,17 @@ const resolveFunctions = {
   */
 
 
-  Products: {
-    likes(product) {
-    //return Likes.findAndCountAll({where: {prodid: product.id}});
-    return Likes.count({where: {prodid: product.id}});
+  Product: {
+    likescount (product) {
+      return Likes.count({where: {prodid: product.id}});
     },
-    comments(obj) {
+    comments (obj) {
       return Comments.count({where: {prodid: obj.id}});
+    },
+    isliked (product, args) {
+      return Likes.count({where: {prodid: product.id, userid: args.userid}});
     }
   },
-  // Bc: {
-  //   brands (obj){
-  //     return obj.brands;
-  //
-  //   },
-  //   categories (obj){
-  //     return obj.categories;
-  //   }
-  // }
 };
 
 export default resolveFunctions;
